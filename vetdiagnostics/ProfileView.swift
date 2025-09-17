@@ -7,55 +7,15 @@ struct ProfileView: View {
     @State private var showResources = false
 
     var body: some View {
-        List {
-            Section(header: Text("My pets")) {
-                ForEach(pets) { pet in
-                    Button {
-                        editingPet = pet
-                    } label: {
-                        PetRow(pet: pet)
-                    }
-                    .buttonStyle(.plain)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) {
-                            withAnimation {
-                                pets.removeAll { $0.id == pet.id }
-                            }
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                }
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 16) {
+                petRosterSection
+                accountActions
             }
-
-            Section {
-                NavigationLink {
-                    SettingsView()
-                } label: {
-                    Label("Account settings", systemImage: "gear")
-                }
-
-                Button {
-                    showResources = true
-                } label: {
-                    Label("Care resources", systemImage: "book")
-                }
-                .sheet(isPresented: $showResources) {
-                    NavigationStack {
-                        ResourceListView(resources: Resource.mock)
-                            .navigationTitle("Care resources")
-                            .toolbar {
-                                ToolbarItem(placement: .navigationBarTrailing) {
-                                    Button("Done") {
-                                        showResources = false
-                                    }
-                                }
-                            }
-                    }
-                }
-            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 24)
         }
-        .background(AppColor.background)
+        .background(AppColor.background.ignoresSafeArea())
         .navigationTitle("Profile")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -100,6 +60,105 @@ struct ProfileView: View {
                 }
             }
         }
+    }
+
+    private var petRosterSection: some View {
+        AppCard(title: "My pets", subtitle: "Tap a profile to view or edit details.") {
+            ScrollView(.vertical, showsIndicators: true) {
+                LazyVStack(spacing: 12) {
+                    ForEach(pets) { pet in
+                        Button {
+                            editingPet = pet
+                        } label: {
+                            PetRow(pet: pet)
+                                .padding(16)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .fill(AppColor.surface)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .stroke(AppColor.separator.opacity(0.2))
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                withAnimation {
+                                    pets.removeAll { $0.id == pet.id }
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+            .frame(maxHeight: 260)
+        }
+    }
+
+    private var accountActions: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Account & resources")
+                .font(AppTypography.title2)
+                .fontWeight(.semibold)
+
+            VStack(spacing: 12) {
+                NavigationLink {
+                    SettingsView()
+                } label: {
+                    actionRow(title: "Account settings", systemImage: "gear")
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    showResources = true
+                } label: {
+                    actionRow(title: "Care resources", systemImage: "book")
+                }
+                .buttonStyle(.plain)
+                .sheet(isPresented: $showResources) {
+                    NavigationStack {
+                        ResourceListView(resources: Resource.mock)
+                            .navigationTitle("Care resources")
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    Button("Done") {
+                                        showResources = false
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+        }
+    }
+
+    private func actionRow(title: String, systemImage: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .imageScale(.medium)
+                .foregroundColor(AppColor.accent)
+            Text(title)
+                .font(AppTypography.body)
+                .fontWeight(.semibold)
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundColor(.secondary)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(AppColor.surface)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(AppColor.separator.opacity(0.2))
+        )
     }
 }
 
