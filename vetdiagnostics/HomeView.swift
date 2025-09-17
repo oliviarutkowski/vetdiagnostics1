@@ -5,18 +5,27 @@ struct HomeView: View {
     private let recentAnalyses: [DiagnosisSummary] = DiagnosisSummary.mock
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                heroHeader
+        ScrollView(.vertical, showsIndicators: false) {
+            LazyVStack(alignment: .leading, spacing: 16) {
                 quickActions
                 insightsSection
                 resourceSection
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 40)
-            .padding(.top, 12)
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 32)
         }
         .background(AppColor.background.ignoresSafeArea())
+        .safeAreaInset(edge: .top, spacing: 0) {
+            heroHeader
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 12)
+                .background(
+                    AppColor.background
+                        .shadow(color: AppColor.accent.opacity(0.1), radius: 18, x: 0, y: 8)
+                )
+        }
         .navigationTitle("Welcome")
         .toolbarBackground(AppColor.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)

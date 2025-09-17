@@ -15,15 +15,20 @@ struct AIDiagnosticView: View {
 
     var body: some View {
         ZStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVStack(alignment: .leading, spacing: 16, pinnedViews: [.sectionHeaders]) {
                     header
-                    stageSelector
-                    intakeSection
-                    vitalsSection
-                    summarySection
+                    Section {
+                        intakeSection
+                        vitalsSection
+                        summarySection
+                    } header: {
+                        stageHeader
+                    }
                 }
-                .padding(20)
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 32)
             }
             .background(AppColor.background.ignoresSafeArea())
 
@@ -62,7 +67,7 @@ struct AIDiagnosticView: View {
                 .font(AppTypography.body)
                 .foregroundColor(.secondary)
         }
-        .padding(20)
+        .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(AppColor.primaryGradient)
@@ -73,12 +78,14 @@ struct AIDiagnosticView: View {
         .accessibilityLabel(Text("Guided triage introduction"))
     }
 
-    private var stageSelector: some View {
+    private var stageHeader: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Workflow stage")
                 .font(AppTypography.headline)
             AppSegmentedControl(selection: $selectedStage, options: stages)
         }
+        .padding(16)
+        .background(AppColor.background)
     }
 
     private var intakeSection: some View {
