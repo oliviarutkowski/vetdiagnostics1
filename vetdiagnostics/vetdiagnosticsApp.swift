@@ -12,6 +12,7 @@ struct vetdiagnosticsApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .tint(AppColor.accent)
         }
     }
 }
